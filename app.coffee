@@ -1,6 +1,10 @@
 express = require 'express'
 http = require 'http'
 path = require 'path'
+mongoose = require 'mongoose'
+Place = require './models/place'
+
+mongoose.connect 'localhost/okletsgo'
 
 app = express()
 
@@ -27,8 +31,8 @@ app.get '/places.json', (req, res) ->
     if err
       res.json 
         error: err
-      else
-        res.json places
+    else
+      res.json places
 
 http.createServer(app).listen app.get('port'), () ->
   console.log "listening on port 3000"
