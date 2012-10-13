@@ -6,7 +6,7 @@ Mongoose = require('mongoose')
 schema = Mongoose.Schema
   name:
     type: String
-    require: true
+    required: true
   category:
     type: String
     required: true
@@ -19,10 +19,12 @@ schema = Mongoose.Schema
   image_credit: String
   location:
     type: [Number]
-    require: true
+    required: true
     index: '2d'
   distance: Number # FIXME this should be a virtual attribute
-
+  published:
+    type: Boolean
+    default: false
 
 schema.methods.getDistance = (lon, lat) ->
   R = 3961 # miles
@@ -48,6 +50,7 @@ schema.statics.findByLocation = (query, cb) ->
     q = @where 'location',
       '$near': [query.lon, query.lat]
       '$maxDistance': @milesToDegrees(query.distance || DEFAULT_DISTANCE_IN_MILES)
+    q = q.where('published', true)
     q = q.where('category', query.category) if query.category
     q.exec (err, places) ->
       for place in places
