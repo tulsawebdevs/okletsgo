@@ -59,3 +59,17 @@ a {
 .badge {
 	background-color: #14344f;
 }
+
+img#logo {
+	width: 130px;
+}
+
+div.container {
+	margin-top: -6px;
+	height: 30px;
+}
+
+div.navbar-inner {
+	margin-bottom: 27px;
+	margin-top: -10px;
+}
