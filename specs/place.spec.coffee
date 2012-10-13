@@ -2,71 +2,81 @@ Place = require('../models/place')
 
 describe 'Place', ->
   describe '.findByLocation', ->
-    it 'sets where on location with maxDistance of 10 miles by default', ->
-      spyOn(Place, 'where').andReturn(Place)
-      Place.exec = ->
-      Place.findByLocation
-        lat: 1
-        lon: 2
-      calls = Place.where.argsForCall
-      args = calls[0]
-      expect(calls.length).toEqual(1)
-      expect(args[0]).toEqual('location')
-      expect(args[1]['$near']).toEqual [2, 1]
-      expect(args[1]['$maxDistance']).toBeCloseTo(0.14, 0.01)
 
-    it 'sets maxDistance of 20 miles when specified', ->
-      spyOn(Place, 'where').andReturn(Place)
-      Place.exec = ->
-      Place.findByLocation
-        lat: 1
-        lon: 2
-        distance: 20
-      args = Place.where.argsForCall[0]
-      expect(args[1]['$maxDistance']).toBeCloseTo(0.29, 0.01)
+    cb = null
 
-    it 'does not search if missing lat lon', ->
+    beforeEach ->
+      spyOn(Place, 'where').andReturn(Place)
       cb = jasmine.createSpy("callback")
-      Place.findByLocation({}, cb)
-      expect(cb).toHaveBeenCalledWith 'must supply lat and lon parameters'
-
-    it 'sets where on location and category', ->
-      spyOn(Place, 'where').andReturn(Place)
-      Place.exec = ->
-      Place.findByLocation
-        lat: 1
-        lon: 2
-        category: 'museum'
-      expect(Place.where).toHaveBeenCalledWith 'category', 'museum'
-
-    it 'should also return distance as well', ->
-      cb = jasmine.createSpy("callback")
-      spyOn(Place, 'where').andReturn(Place)
       Place.exec = jasmine.createSpy('exec')
-      Place.findByLocation({lat: 1, lon: 2}, cb)
-      dcb = Place.exec.mostRecentCall.args[0]
-      dcb null, [
-        new Place 
-          location: [2, 1]
-      ]
-      data = cb.mostRecentCall.args[1]
-      expect(data[0].toJSON().distance).toEqual(0)
+
+    describe 'given parameters lat and lon', ->
+      beforeEach ->
+        Place.findByLocation
+          lat: 1
+          lon: 2
+
+      it 'filters $near lat, lon with maxDistance of 10 miles by default', ->
+        calls = Place.where.argsForCall
+        expect(calls.length).toEqual(1)
+        args = calls[0]
+        expect(args[0]).toEqual('location')
+        expect(args[1]['$near']).toEqual [2, 1]
+        expect(args[1]['$maxDistance']).toBeCloseTo(0.14, 0.01)
+
+      it 'returns distance for each place', ->
+        Place.findByLocation({lat: 1, lon: 2}, cb)
+        mongoose_cb = Place.exec.mostRecentCall.args[0]
+        mongoose_cb null, [
+          new Place
+            location: [3, 2]
+        ]
+        data = cb.mostRecentCall.args[1]
+        expect(data[0].toJSON().distance).toBeCloseTo(97.8, 0.1)
+
+    describe 'given parameters lat, lon, and distance', ->
+      beforeEach ->
+        Place.findByLocation
+          lat: 1
+          lon: 2
+          distance: 20
+
+      it 'filters $near lat, lon with given maxDistance', ->
+        args = Place.where.argsForCall[0]
+        expect(args[1]['$maxDistance']).toBeCloseTo(0.29, 0.01)
+
+    describe 'given missing parameters lat and lon', ->
+      beforeEach ->
+        Place.findByLocation {}, cb
+
+      it 'returns an error if missing lat lon', ->
+        expect(cb).toHaveBeenCalledWith 'must supply lat and lon parameters'
+
+    describe 'given parameters lat, lon, and category', ->
+      beforeEach ->
+        Place.findByLocation
+          lat: 1
+          lon: 2
+          category: 'museum'
+
+      it 'sets where on location and given category', ->
+        expect(Place.where).toHaveBeenCalledWith 'category', 'museum'
 
   describe '.milesToDegrees', ->
-    it 'should return about 1 degree, given 69 miles', ->
+    it 'returns about 1 degree, given 69 miles', ->
       deg = Place.milesToDegrees 69
       expect(deg).toBeCloseTo(1, 0.01)
 
-    it 'should return about 1.44 degrees, given 100 miles', ->
+    it 'returns about 1.44 degrees, given 100 miles', ->
       deg = Place.milesToDegrees 100
       expect(deg).toBeCloseTo(1.44, 0.01)
 
-    it 'should return about 1.44 degrees, given 200 miles (max 100)', ->
+    it 'returns about 1.44 degrees, given 200 miles (max 100)', ->
       deg = Place.milesToDegrees 200
       expect(deg).toBeCloseTo(1.44, 0.01)
 
   describe '#getDistance', ->
-    it 'should return distance in miles from the specified origin to the place location', ->
+    it 'returns distance in miles from the specified origin to the place location', ->
       place = new Place
         location: [-95.9925, 36.1539]
       distance = place.getDistance -97.5352, 35.4823
