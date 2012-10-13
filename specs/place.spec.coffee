@@ -2,15 +2,28 @@ Place = require('../models/place')
 
 describe 'Place', ->
   describe '.findByLocation', ->
-    it 'sets where on location', ->
+    it 'sets where on location with maxDistance of 10 miles by default', ->
       spyOn(Place, 'where').andReturn(Place)
       Place.exec = ->
       Place.findByLocation
         lat: 1
         lon: 2
-      expect(Place.where).toHaveBeenCalledWith 'location',
-        '$near': [2, 1]
-      expect(Place.where.argsForCall.length).toEqual(1)
+      calls = Place.where.argsForCall
+      args = calls[0]
+      expect(calls.length).toEqual(1)
+      expect(args[0]).toEqual('location')
+      expect(args[1]['$near']).toEqual [2, 1]
+      expect(args[1]['$maxDistance']).toBeCloseTo(0.14, 0.01)
+
+    it 'sets maxDistance of 20 miles when specified', ->
+      spyOn(Place, 'where').andReturn(Place)
+      Place.exec = ->
+      Place.findByLocation
+        lat: 1
+        lon: 2
+        distance: 20
+      args = Place.where.argsForCall[0]
+      expect(args[1]['$maxDistance']).toBeCloseTo(0.29, 0.01)
 
     it 'does not search if missing lat lon', ->
       cb = jasmine.createSpy("callback")
@@ -43,6 +56,18 @@ describe 'Place', ->
     it 'should return distance between 2 points', ->
       place = new Place
         location: [-95.9925, 36.1539]
-
       distance = place.getDistance 35.4823, -97.5352
       expect(distance).toBeCloseTo(157.8, 0.1)
+
+  describe '.milesToDegrees', ->
+    it 'should return about 1 degree, given 69 miles', ->
+      deg = Place.milesToDegrees 69
+      expect(deg).toBeCloseTo(1, 0.01)
+
+    it 'should return about 1.44 degrees, given 100 miles', ->
+      deg = Place.milesToDegrees 100
+      expect(deg).toBeCloseTo(1.44, 0.01)
+
+    it 'should return about 1.44 degrees, given 200 miles (max 100)', ->
+      deg = Place.milesToDegrees 200
+      expect(deg).toBeCloseTo(1.44, 0.01)

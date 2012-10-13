@@ -1,3 +1,6 @@
+MAX_DISTANCE_IN_MILES = 100
+DEFAULT_DISTANCE_IN_MILES = 10
+
 Mongoose = require('mongoose')
 
 schema = Mongoose.Schema
@@ -43,7 +46,9 @@ schema.methods.getDistance = (lat, lon) ->
 
 schema.statics.findByLocation = (query, cb) ->
   if (query.lat? and query.lon?)
-    q = @where('location', '$near': [query.lon, query.lat])
+    q = @where 'location',
+      '$near': [query.lon, query.lat]
+      '$maxDistance': @milesToDegrees(query.distance || DEFAULT_DISTANCE_IN_MILES)
     q = q.where('category', query.category) if query.category
     q.exec (err, places) ->
       for place in places
@@ -51,5 +56,8 @@ schema.statics.findByLocation = (query, cb) ->
       cb(err, places)
   else
     cb 'must supply lat and lon parameters'
+
+schema.statics.milesToDegrees = (miles) ->
+  Math.min(miles, MAX_DISTANCE_IN_MILES) / 69
 
 module.exports = Mongoose.model 'Place', schema
