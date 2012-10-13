@@ -50,7 +50,7 @@ A mobile web app to list and add cool events and interesting locations around Ok
 	*This will import the file okletsgo.csv (in the current folder) to the database.  This uses a few features that requires Ruby 1.9.x*
 	
 	```
-	ruby -rcsv -rjson -e "places = []; CSV.foreach('sample_data/okletsgo.csv', {headers: true}) { |row| r=row.to_hash; r['tags'] = r['tags'].split(/\s*,\s*/); r['location'] = [r.delete('lon').to_f, r.delete('lat').to_f]; places << r }; puts places.to_json" | mongoimport -d okletsgo -c places --jsonArray
+	ruby -rcsv -rjson -e "places = []; CSV.foreach('sample_data/okletsgo.csv', {headers: true}) { |row| r=row.to_hash; r['tags'] = r['tags'].split(/\s*,\s*/); r['location'] = [r.delete('lon').to_f, r.delete('lat').to_f]; r['published'] = true; places << r }; puts places.to_json" | mongoimport -d okletsgo -c places --jsonArray
 
 	```
 	> You should see something like…
