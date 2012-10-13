@@ -17,7 +17,7 @@ A mobile web app to list and add cool events and interesting locations around Ok
     \curl -L https://get.rvm.io | bash -s stable --	ruby
     ```
 
-2. **Add RVM to your profile**
+2. **Add RVM and Mongo to your profile**
  	
  	```
  	vim ~/.profile
