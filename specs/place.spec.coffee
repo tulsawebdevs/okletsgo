@@ -142,3 +142,37 @@ describe 'Place', ->
 
       it 'fails validation for category attribute', ->
         runs -> expect(_.pluck(result.errors, 'path')).toContain 'category'
+
+  describe '.build', ->
+    describe 'given name and published', ->
+      place = null
+
+      beforeEach ->
+        place = Place.build
+          name: 'Foo'
+          published: true
+
+      it 'does not set published', ->
+        expect(place.published).toEqual(false)
+
+      it 'does not set invalid location', ->
+        expect(place.location).toBeUndefined()
+
+    describe 'given tags, lat, and lon', ->
+      place = null
+
+      beforeEach ->
+        place = Place.build
+          tags: 'foo, bar'
+          lat: '1'
+          lon: '2'
+
+      it 'sets tags as an array', ->
+        # note: toEqual(['foo', 'bar']) fails here -- weird
+        expect(place.tags[0]).toEqual 'foo'
+        expect(place.tags[1]).toEqual 'bar'
+
+      it 'sets locaiton as an array', ->
+        # note: toEqual([2, 1]) fails here -- weird
+        expect(place.location[0]).toEqual 2
+        expect(place.location[1]).toEqual 1
