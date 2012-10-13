@@ -1,3 +1,6 @@
+MAX_DISTANCE_IN_MILES = 100
+DEFAULT_DISTANCE_IN_MILES = 10
+
 Mongoose = require('mongoose')
 
 schema = Mongoose.Schema
@@ -21,8 +24,8 @@ schema = Mongoose.Schema
   distance: Number # FIXME this should be a virtual attribute
 
 
-schema.methods.getDistance = (lat, lon) ->
-  R = 6371 # km
+schema.methods.getDistance = (lon, lat) ->
+  R = 3961 # miles
 
   lat1 = @location[1]
   lon1 = @location[0]
@@ -38,18 +41,22 @@ schema.methods.getDistance = (lat, lon) ->
     Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2)  
 
   c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))  
-  d = R * c 
-  return d
+  R * c
 
 schema.statics.findByLocation = (query, cb) ->
   if (query.lat? and query.lon?)
-    q = @where('location', '$near': [query.lon, query.lat])
+    q = @where 'location',
+      '$near': [query.lon, query.lat]
+      '$maxDistance': @milesToDegrees(query.distance || DEFAULT_DISTANCE_IN_MILES)
     q = q.where('category', query.category) if query.category
     q.exec (err, places) ->
       for place in places
-        place.distance = place.getDistance(query.lat, query.lon)
+        place.distance = place.getDistance(query.lon, query.lat)
       cb(err, places)
   else
     cb 'must supply lat and lon parameters'
+
+schema.statics.milesToDegrees = (miles) ->
+  Math.min(miles, MAX_DISTANCE_IN_MILES) / 69
 
 module.exports = Mongoose.model 'Place', schema
