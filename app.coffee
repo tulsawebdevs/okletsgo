@@ -3,6 +3,7 @@ http            = require 'http'
 path            = require 'path'
 coffeescript    = require('coffee-script')
 io              = require('socket.io')
+Place           = require('./models/place')
 
 app = express()
 
@@ -31,8 +32,8 @@ app.get '/places.json', (req, res) ->
     if err
       res.json 
         error: err
-      else
-        res.json places
+    else
+      res.json places
 
 server = require('http').createServer(app)
 server.listen app.get("port"), ->
