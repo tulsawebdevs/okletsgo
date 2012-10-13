@@ -6,7 +6,7 @@ Mongoose = require('mongoose')
 schema = Mongoose.Schema
   name:
     type: String
-    require: true
+    required: true
   category:
     type: String
     required: true
@@ -19,7 +19,7 @@ schema = Mongoose.Schema
   image_credit: String
   location:
     type: [Number]
-    require: true
+    required: true
     index: '2d'
   distance: Number # FIXME this should be a virtual attribute
   published:

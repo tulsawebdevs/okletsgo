@@ -1,3 +1,4 @@
+_ = require('underscore')
 Place = require('../models/place')
 
 describe 'Place', ->
@@ -89,3 +90,35 @@ describe 'Place', ->
         location: [-95.9925, 36.1539]
       distance = place.getDistance -97.5352, 35.4823
       expect(distance).toBeCloseTo(98.1, 0.1)
+
+  describe 'new Place', ->
+    describe 'given name, category, and location', ->
+      place = null
+
+      beforeEach ->
+        place = new Place
+          name: 'Foo'
+          category: 'hotel'
+          location: [2, 1]
+
+      it 'sets published to false', ->
+        expect(place.published).toEqual(false)
+
+    describe 'given no attributes', ->
+      place = null
+      cb = null
+      result = null
+
+      beforeEach ->
+        place = new Place
+        runs -> place.validate (err) -> result = err
+        waitsFor (-> result), 'callback not called', 100
+
+      it 'fails validation for name attribute', ->
+        runs -> expect(_.pluck(result.errors, 'path')).toContain 'name'
+
+      it 'fails validation for location attribute', ->
+        runs -> expect(_.pluck(result.errors, 'path')).toContain 'location'
+
+      it 'fails validation for category attribute', ->
+        runs -> expect(_.pluck(result.errors, 'path')).toContain 'category'
