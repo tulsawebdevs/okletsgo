@@ -50,46 +50,7 @@ app.post '/places.json', (req, res) ->
 server = require('http').createServer(app)
 server.listen app.get("port"), ->
   console.log "Express server listening on port " + app.get("port")
-io = io.listen(server)
+#io = io.listen(server)
 
-io.sockets.on "connection", (socket) ->
-  socket.on "load_events", (data) ->
-    console.log "LAT: " + data.lat
-    console.log "LONG: " + data.long
-    socket.emit "new_events",
-      events: 
-        [
-          title: "Tulsa Tech Fest"
-          description: "Lorem Ipsum"
-          distance: "3.9"
-        ,
-          title: "Some band is playing"
-          description: "hrmm2"
-          distance: "3.9"
-        ,
-          title: "Another band is playing"
-          description: "wowowweewow"
-          distance: "3.9"
-        ,
-          title: "Another band is playing"
-          description: "wowowweewow"
-          distance: "3.9"
-        ,
-          title: "Another band is playing"
-          description: "wowowweewow"
-          distance: "3.9"
-        ,
-          title: "Another band is playing"
-          description: "wowowweewow"
-          distance: "3.9"
-        ,
-          title: "Another band is playing"
-          description: "wowowweewow"
-          distance: "3.9"
-        ,
-          title: "Another band is playing"
-          description: "wowowweewow"
-          distance: "3.9"
-        ]
-
-
+#io.sockets.on "connection", (socket) ->
+  #insert nail here, hammer is ready
