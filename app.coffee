@@ -22,6 +22,14 @@ app.get '/', (req, res) ->
   res.render('index', { title: 'Express' });
   return
 
+app.get '/places.json', (req, res) ->
+  Place.findByLocation req.query, (err, places) ->
+    if err
+      res.json 
+        error: err
+      else
+        res.json places
+
 http.createServer(app).listen app.get('port'), () ->
   console.log "listening on port 3000"
   return
