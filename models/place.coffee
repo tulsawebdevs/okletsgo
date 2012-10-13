@@ -47,7 +47,8 @@ schema.methods.getDistance = (lon, lat) ->
 
 schema.statics.findByLocation = (query, cb) ->
   if (query.lat? and query.lon?)
-    q = @where 'location',
+    q = @find()
+    q = q.where 'location',
       '$near': [query.lon, query.lat]
       '$maxDistance': @milesToDegrees(query.distance || DEFAULT_DISTANCE_IN_MILES)
     q = q.where('published', true)

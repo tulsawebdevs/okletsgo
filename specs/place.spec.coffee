@@ -4,34 +4,41 @@ Place = require('../models/place')
 describe 'Place', ->
   describe '.findByLocation', ->
 
+    query = null
     cb = null
 
     beforeEach ->
-      spyOn(Place, 'where').andReturn(Place)
+      query = {where: null, skip: null, limit: null, exec: ->}
+      spyOn(query, 'where').andReturn(query)
+      spyOn(query, 'skip').andReturn(query)
+      spyOn(query, 'limit').andReturn(query)
+      spyOn(query, 'exec')
+      spyOn(Place, 'find').andReturn(query)
       cb = jasmine.createSpy("callback")
-      Place.exec = jasmine.createSpy('exec')
 
     describe 'given parameters lat and lon', ->
-      calls = null
+      where = null
+      skip = null
+      limit = null
 
       beforeEach ->
         Place.findByLocation
           lat: 1
           lon: 2
-        calls = Place.where.argsForCall
+        where = query.where.argsForCall
 
       it 'filters $near lat, lon with maxDistance of 10 miles by default', ->
-        args = calls[0]
+        args = where[0]
         expect(args[0]).toEqual('location')
         expect(args[1]['$near']).toEqual [2, 1]
         expect(args[1]['$maxDistance']).toBeCloseTo(0.14, 0.01)
 
       it 'does not filter on category', ->
-        expect(calls.length).toEqual(2)
+        expect(where.length).toEqual(2)
 
       it 'returns distance for each place', ->
         Place.findByLocation({lat: 1, lon: 2}, cb)
-        mongoose_cb = Place.exec.mostRecentCall.args[0]
+        mongoose_cb = query.exec.mostRecentCall.args[0]
         mongoose_cb null, [
           new Place
             location: [3, 2]
@@ -40,7 +47,7 @@ describe 'Place', ->
         expect(data[0].toJSON().distance).toBeCloseTo(97.8, 0.1)
 
       it 'queries only published places', ->
-        args = calls[1]
+        args = where[1]
         expect(args).toEqual ['published', true]
 
     describe 'given parameters lat, lon, and distance', ->
@@ -51,7 +58,7 @@ describe 'Place', ->
           distance: 20
 
       it 'filters $near lat, lon with given maxDistance', ->
-        args = Place.where.argsForCall[0]
+        args = query.where.argsForCall[0]
         expect(args[1]['$maxDistance']).toBeCloseTo(0.29, 0.01)
 
     describe 'given missing parameters lat and lon', ->
@@ -68,8 +75,8 @@ describe 'Place', ->
           lon: 2
           category: 'museum'
 
-      it 'sets where on location and given category', ->
-        expect(Place.where).toHaveBeenCalledWith 'category', 'museum'
+      it 'filters $near lat, lon and given category', ->
+        expect(query.where).toHaveBeenCalledWith 'category', 'museum'
 
   describe '.milesToDegrees', ->
     it 'returns about 1 degree, given 69 miles', ->
