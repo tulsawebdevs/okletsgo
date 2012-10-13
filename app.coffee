@@ -1,8 +1,10 @@
-express = require 'express'
-http = require 'http'
-path = require 'path'
-mongoose = require 'mongoose'
-Place = require './models/place'
+express         = require 'express'
+http            = require 'http'
+path            = require 'path'
+coffeescript    = require('coffee-script')
+io              = require('socket.io')
+mongoose        = require 'mongoose'
+Place           = require './models/place'
 
 mongoose.connect 'localhost/okletsgo'
 
@@ -16,6 +18,8 @@ app.configure () ->
   app.use express.logger 'dev'
   app.use express.bodyParser()
   app.use express.methodOverride()
+  app.use require('connect-assets')()
+
   app.use express.static path.join "#{__dirname}/public"
 
 app.configure "development", () ->
@@ -23,7 +27,7 @@ app.configure "development", () ->
   return
 
 app.get '/', (req, res) ->
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Ok, lets go!' });
   return
 
 app.get '/places.json', (req, res) ->
@@ -34,6 +38,49 @@ app.get '/places.json', (req, res) ->
     else
       res.json places
 
-http.createServer(app).listen app.get('port'), () ->
-  console.log "listening on port 3000"
-  return
+server = require('http').createServer(app)
+server.listen app.get("port"), ->
+  console.log "Express server listening on port " + app.get("port")
+io = io.listen(server)
+
+io.sockets.on "connection", (socket) ->
+  socket.on "load_events", (data) ->
+    console.log "LAT: " + data.lat
+    console.log "LONG: " + data.long
+    socket.emit "new_events",
+      events: 
+        [
+          title: "Tulsa Tech Fest"
+          description: "Lorem Ipsum"
+          distance: "3.9"
+        ,
+          title: "Some band is playing"
+          description: "hrmm2"
+          distance: "3.9"
+        ,
+          title: "Another band is playing"
+          description: "wowowweewow"
+          distance: "3.9"
+        ,
+          title: "Another band is playing"
+          description: "wowowweewow"
+          distance: "3.9"
+        ,
+          title: "Another band is playing"
+          description: "wowowweewow"
+          distance: "3.9"
+        ,
+          title: "Another band is playing"
+          description: "wowowweewow"
+          distance: "3.9"
+        ,
+          title: "Another band is playing"
+          description: "wowowweewow"
+          distance: "3.9"
+        ,
+          title: "Another band is playing"
+          description: "wowowweewow"
+          distance: "3.9"
+        ]
+
+
