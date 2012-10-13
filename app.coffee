@@ -24,7 +24,11 @@ app.get '/', (req, res) ->
 
 app.get '/places.json', (req, res) ->
   Place.findByLocation req.query, (err, places) ->
-    res.json places
+    if err
+      res.json 
+        error: err
+      else
+        res.json places
 
 http.createServer(app).listen app.get('port'), () ->
   console.log "listening on port 3000"
