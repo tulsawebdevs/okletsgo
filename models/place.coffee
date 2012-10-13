@@ -1,5 +1,6 @@
 MAX_DISTANCE_IN_MILES = 100
 DEFAULT_DISTANCE_IN_MILES = 10
+COUNT_PER_PAGE = 10
 
 Mongoose = require('mongoose')
 
@@ -47,11 +48,14 @@ schema.methods.getDistance = (lon, lat) ->
 
 schema.statics.findByLocation = (query, cb) ->
   if (query.lat? and query.lon?)
-    q = @where 'location',
+    q = @find()
+    q = q.where 'location',
       '$near': [query.lon, query.lat]
       '$maxDistance': @milesToDegrees(query.distance || DEFAULT_DISTANCE_IN_MILES)
     q = q.where('published', true)
     q = q.where('category', query.category) if query.category
+    page = Math.max(query.page || 1, 1)
+    q = q.skip(COUNT_PER_PAGE * (page - 1)).limit(COUNT_PER_PAGE)
     q.exec (err, places) ->
       for place in places
         place.distance = place.getDistance(query.lon, query.lat)
