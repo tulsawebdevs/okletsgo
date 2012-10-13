@@ -6,7 +6,7 @@ io              = require('socket.io')
 mongoose        = require 'mongoose'
 Place           = require './models/place'
 
-mongoose.connect 'localhost/okletsgo'
+mongoose.connect process.env.OKLETSGO_MONGO
 
 app = express()
 
