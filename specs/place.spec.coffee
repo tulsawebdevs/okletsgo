@@ -11,18 +11,22 @@ describe 'Place', ->
       Place.exec = jasmine.createSpy('exec')
 
     describe 'given parameters lat and lon', ->
+      calls = null
+
       beforeEach ->
         Place.findByLocation
           lat: 1
           lon: 2
+        calls = Place.where.argsForCall
 
       it 'filters $near lat, lon with maxDistance of 10 miles by default', ->
-        calls = Place.where.argsForCall
-        expect(calls.length).toEqual(1)
         args = calls[0]
         expect(args[0]).toEqual('location')
         expect(args[1]['$near']).toEqual [2, 1]
         expect(args[1]['$maxDistance']).toBeCloseTo(0.14, 0.01)
+
+      it 'does not filter on category', ->
+        expect(calls.length).toEqual(2)
 
       it 'returns distance for each place', ->
         Place.findByLocation({lat: 1, lon: 2}, cb)
@@ -33,6 +37,10 @@ describe 'Place', ->
         ]
         data = cb.mostRecentCall.args[1]
         expect(data[0].toJSON().distance).toBeCloseTo(97.8, 0.1)
+
+      it 'queries only published places', ->
+        args = calls[1]
+        expect(args).toEqual ['published', true]
 
     describe 'given parameters lat, lon, and distance', ->
       beforeEach ->
