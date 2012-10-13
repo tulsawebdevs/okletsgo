@@ -52,13 +52,6 @@ describe 'Place', ->
       data = cb.mostRecentCall.args[1]
       expect(data[0].toJSON().distance).toEqual(0)
 
-  describe '#getDistance', ->
-    it 'should return distance between 2 points', ->
-      place = new Place
-        location: [-95.9925, 36.1539]
-      distance = place.getDistance 35.4823, -97.5352
-      expect(distance).toBeCloseTo(157.8, 0.1)
-
   describe '.milesToDegrees', ->
     it 'should return about 1 degree, given 69 miles', ->
       deg = Place.milesToDegrees 69
@@ -71,3 +64,10 @@ describe 'Place', ->
     it 'should return about 1.44 degrees, given 200 miles (max 100)', ->
       deg = Place.milesToDegrees 200
       expect(deg).toBeCloseTo(1.44, 0.01)
+
+  describe '#getDistance', ->
+    it 'should return distance in miles from the specified origin to the place location', ->
+      place = new Place
+        location: [-95.9925, 36.1539]
+      distance = place.getDistance -97.5352, 35.4823
+      expect(distance).toBeCloseTo(98.1, 0.1)
