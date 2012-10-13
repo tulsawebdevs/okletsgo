@@ -18,8 +18,6 @@ describe 'Place', ->
 
     describe 'given parameters lat and lon', ->
       where = null
-      skip = null
-      limit = null
 
       beforeEach ->
         Place.findByLocation
@@ -32,6 +30,10 @@ describe 'Place', ->
         expect(args[0]).toEqual('location')
         expect(args[1]['$near']).toEqual [2, 1]
         expect(args[1]['$maxDistance']).toBeCloseTo(0.14, 0.01)
+
+      it 'limits to the first 10 places by default ', ->
+        expect(query.skip).toHaveBeenCalledWith(0)
+        expect(query.limit).toHaveBeenCalledWith(10)
 
       it 'does not filter on category', ->
         expect(where.length).toEqual(2)
@@ -60,6 +62,17 @@ describe 'Place', ->
       it 'filters $near lat, lon with given maxDistance', ->
         args = query.where.argsForCall[0]
         expect(args[1]['$maxDistance']).toBeCloseTo(0.29, 0.01)
+
+    describe 'given parameters lat, lon, and page', ->
+      beforeEach ->
+        Place.findByLocation
+          lat: 1
+          lon: 2
+          page: 2
+
+      it 'calls skip and limit', ->
+        expect(query.skip).toHaveBeenCalledWith(10)
+        expect(query.limit).toHaveBeenCalledWith(10)
 
     describe 'given missing parameters lat and lon', ->
       beforeEach ->
