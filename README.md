@@ -26,7 +26,8 @@ A mobile web app to list and add cool events and interesting locations around Ok
  	> *add the line*
  	
  	```
- 	source /Users/shanecowherd/.rvm/scripts/rvm
+ 	source ~/.rvm/scripts/rvm
+ 	export OKLETSGO_MONGO='localhost/okletsgo'
  	```
  	> *save the file and restart terminal*
 
@@ -70,5 +71,3 @@ A mobile web app to list and add cool events and interesting locations around Ok
 ##Starting the app
 1. Install Node.js with NVM
 2. type `npm start` or `coffee app.coffee` 
-
-
