@@ -33,10 +33,19 @@ app.get '/', (req, res) ->
 app.get '/places.json', (req, res) ->
   Place.findByLocation req.query, (err, places) ->
     if err
-      res.json 
+      res.json
         error: err
     else
       res.json places
+
+app.post '/places.json', (req, res) ->
+  place = Place.build req.body
+  place.save (err) ->
+    if err
+      res.json
+        error: err
+    else
+      res.json place
 
 server = require('http').createServer(app)
 server.listen app.get("port"), ->

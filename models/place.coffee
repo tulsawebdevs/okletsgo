@@ -17,6 +17,7 @@ schema = Mongoose.Schema
   website: String
   start: Date
   end: Date
+  image_url: String
   image_credit: String
   location:
     type: [Number]
@@ -65,5 +66,17 @@ schema.statics.findByLocation = (query, cb) ->
 
 schema.statics.milesToDegrees = (miles) ->
   Math.min(miles, MAX_DISTANCE_IN_MILES) / 69
+
+schema.statics.build = (form) ->
+  new this
+    name: form.name
+    category: form.category
+    description: form.description
+    tags: form.tags?.split(/\s*,\s*/)
+    address: form.address
+    website: form.website
+    image_url: form.image_url
+    image_credit: form.image_credit
+    location: if form.lon? and form.lon? then [form.lon, form.lat]
 
 module.exports = Mongoose.model 'Place', schema
