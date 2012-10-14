@@ -2,6 +2,8 @@ $(document).ready ->
   $(".events .span12").append('<center><br/><br/><img src="/img/ajax-loader.gif" /></center>')
   showPosition = (position) ->
     if position.coords.latitude?
+      $("#lat").val(position.coords.latitude)
+      $("#lon").val(position.coords.longitude)
       $.getJSON "/places.json?lat=#{position.coords.latitude}&lon=#{position.coords.longitude}", (data) ->
         $(".events .span12").html("")
         for event in data

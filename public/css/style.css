@@ -49,6 +49,7 @@ a {
 	display: block;
 	margin-right: auto;
 	margin-left: auto;
+	color: #000000;
 }
 
 iframe#json {
