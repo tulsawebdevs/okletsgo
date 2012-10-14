@@ -30,6 +30,10 @@ app.get '/', (req, res) ->
   res.render('index', { title: 'Ok, lets go!' });
   return
 
+app.get '/add', (req, res) ->
+  res.render('add', { title: 'Ok, lets go!' });
+  return
+
 app.get '/places.json', (req, res) ->
   Place.findByLocation req.query, (err, places) ->
     if err
