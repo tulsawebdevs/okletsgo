@@ -43,6 +43,24 @@ a {
 .distance {
   float: right;
 }
+
+.add input, .add textarea {
+	width: 90%;
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	color: #000000;
+}
+
+iframe#json {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	background-color: #e5e5e5;
+	border-style: none;
+}
+
 .tags
 {
 	clear: both;
@@ -62,14 +80,7 @@ a {
 
 img#logo {
 	width: 130px;
-}
-
-div.container {
-	margin-top: -6px;
-	height: 30px;
-}
-
-div.navbar-inner {
-	margin-bottom: 27px;
-	margin-top: -10px;
+	display: block;
+	margin-top: 6px;
+	margin-bottom: 16px;
 }
