@@ -77,6 +77,6 @@ schema.statics.build = (form) ->
     website: form.website
     image_url: form.image_url
     image_credit: form.image_credit
-    location: if form.lon? and form.lon? then [form.lon, form.lat]
+    location: if form.lon? and form.lat? then [form.lon, form.lat]
 
 module.exports = Mongoose.model 'Place', schema
