@@ -13,13 +13,7 @@ html
     script(src='http://updateyourbrowser.net/uyb.js')
     != js('application') 
   body
-    .navbar.navbar-top.navbar-inverse
-      .navbar-inner
-        .container
-          a.brand(href='#')
-            img#logo(src='/img/logo.png')
-          .navbar-content
-            ul.nav
-
+    a.brand(href='/')
+      img#logo(src='/img/logo.png')
     .container
       block content
